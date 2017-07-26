@@ -1,0 +1,16 @@
+{
+  "name": "nodejs-express",
+  "version": "1.0.0",
+  "description": "test nodejs express server ",
+  "main": "cluster.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node cluster.js"
+  },
+  "author": "VORLON root@iblog.pro",
+  "license": "ISC",
+  "dependencies": {
+    "cluster": "^0.7.7",
+    "express": "^4.15.3"
+  }
+}

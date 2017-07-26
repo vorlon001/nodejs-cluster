@@ -1,11 +1,13 @@
 var http = require('http');
+var express = require('express');
 var config = require('../config/config.master.json');
 var log  = require('../libs/log.js').log;
 
 let web_server = function (cluster,stats) {
-    http.createServer(function (req, res) {
+
+    var app = express();
+    app.get('/', function(req, res) {
 	stats.start()
-        res.writeHead(200, {"content-type": "text/html"});
 	var current_time =Date.now()
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 	if(config.log.info) log({type:'INFO',wid:null,msg:'web system admin: htmlver:' + req.httpVersion 
@@ -30,14 +32,18 @@ let web_server = function (cluster,stats) {
 	stats.stop(); 
 	out_html = out_html + "Render pages <"+ stats.rs +"> ms. min:" + stats.min_render + " avg:" + stats.avg_render + " max:" + stats.max_render + " i:" + stats.i_render + " all:" + stats.all_render + " ";
         res.end(out_html);
-    }).listen(
-		config.server.port,
-		config.server.ip,  
-		() => { 
-			console.log('WebServer Master-Panel ip : ' + config.server.ip);
-			console.log('WebServer Master-Panel port : ' + config.server.port)
-			console.log('WebServer Master is up!')
-		})
+    });
+
+    const http_server = http.createServer(app)
+
+    http_server.listen(
+      config.server.port,
+      config.server.ip,
+      () => {
+	    log({type:'INFO',msg:'Server Master UP  ip : ' + config.server.iport +':' + config.server.port + ' PID:'+process.pid });
+	}
+    );
+
 }
 
 module.exports = { web: web_server } ;

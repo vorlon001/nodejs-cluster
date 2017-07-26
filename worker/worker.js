@@ -4,6 +4,7 @@ var logger  = require('../libs/log.js').log_worker;
 var log  = require('../libs/log.js').log;
 var config = require('../config/config.worker.json');
 var sleep_rnd = require('../libs/utils.js').sleep_rnd;
+var express = require('express');
 
 let worker = function () {
 
@@ -38,30 +39,41 @@ let worker = function () {
 	}
     });
 
-    http.createServer(function (req, res) {
+    var app = express();
+
+    app.get('/', function(req, res) {
+
 	var a = Date.now();
-	stats.start();
+        stats.start();
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	if(config.log.info)
+        if(config.log.info)
 	    log({type:'INFO',wid:cluster.worker.id, msg:  
-		  ' PID:' + cluster.worker.process.pid
-    	        + ' request htmlver:' + req.httpVersion 
+	      ' PID:' + cluster.worker.process.pid
+	        + ' request htmlver:' + req.httpVersion 
 		+ ' server:' + req.headers['host']
 		+ ' user-agent:"'  +req.headers['user-agent'] + '"'
-		+ ' method:'  +req.method 
+	    	+ ' method:'  +req.method 
 		+ ' url:' + req.url 
-		+ ' RemoteIP:' + ip});
+	    + ' RemoteIP:' + ip});
 
-        res.writeHead(200, {"content-type": "text/html"});
-	if(config.server.sleep) sleep_rnd(5000000);
+        if(config.server.sleep) sleep_rnd(5000000);
 	stats.stop();
-	// замена шаблонизатора на EJS
-        var out_html = "Render pages <"+ stats.rs +"> ms. min:" + stats.min_render + " avg:" + stats.avg_render + " max:" + stats.max_render + " i:" + stats.i_render + " all:" + stats.all_render + " ";
+        // замена шаблонизатора на EJS
+	var out_html = "Render pages <"+ stats.rs +"> ms. min:" + stats.min_render + " avg:" + stats.avg_render + " max:" + stats.max_render + " i:" + stats.i_render + " all:" + stats.all_render + " ";
 
-        res.end('worker'+cluster.worker.id+',PID:'+process.pid+'<br>'+out_html);
-    }).listen(
-	    config.server.port,
-	    config.server.ip);
+        res.send('worker'+cluster.worker.id+',PID:'+process.pid+'<br>'+out_html);
+    });
+
+    const http_server = http.createServer(app)
+
+    http_server.listen(
+      config.server.port,
+      config.server.ip,
+      () => {
+	    log({type:'INFO',msg:'Server UP  ip : ' + config.server.iport +':' + config.server.port +' worker'+cluster.worker.id+',PID:'+process.pid });
+	}
+    );
+
 }
 
 module.exports = worker;

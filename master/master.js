@@ -40,6 +40,8 @@ let server = function () {
         });
     }, config.server.start_ping_worker);
     init.messager(cluster);
+
+
 }
 
 module.exports = server;

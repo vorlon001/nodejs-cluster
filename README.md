@@ -3,7 +3,7 @@ Seample NodeJS Cluster + Express web server
 NodeJS v 8.0.0.
 Module: Cluster, Express 4.0
 
-run node cluster.js
+run npm starts
 logs in logs/*
 config in config/*
 
