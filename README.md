@@ -3,15 +3,13 @@ Seample NodeJS Cluster + Express web server
 NodeJS v 8.0.0.
 Module: Cluster, Express 4.0
 
-<<<<<<< HEAD
-run npm starts
+run:
+1) npm i
+2) npm starts
+
+
 logs in logs/*
 config in config/*
-=======
-run - node cluster.js,
-logs - in logs/*,
-config - in config/*
->>>>>>> origin/master
 
 Web Panel master server http://127.0.0.1:3001
 Web Server  http://127.0.0.1:3000
