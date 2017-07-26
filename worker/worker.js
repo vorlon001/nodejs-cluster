@@ -41,21 +41,26 @@ let worker = function () {
 
     var app = express();
 
-    app.get('/', function(req, res) {
-
-	var a = Date.now();
-        stats.start();
-	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    var WorkerLogger = function (req, res, next) {
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         if(config.log.info)
 	    log({type:'INFO',wid:cluster.worker.id, msg:  
-	      ' PID:' + cluster.worker.process.pid
-	        + ' request htmlver:' + req.httpVersion 
+    		  ' PID:' + cluster.worker.process.pid
+                + ' request htmlver:' + req.httpVersion 
 		+ ' server:' + req.headers['host']
 		+ ' user-agent:"'  +req.headers['user-agent'] + '"'
 	    	+ ' method:'  +req.method 
 		+ ' url:' + req.url 
-	    + ' RemoteIP:' + ip});
+	        + ' RemoteIP:' + ip});
+        next();
+    };
 
+    app.use(WorkerLogger);
+
+    app.get('/', function(req, res) {
+
+	var a = Date.now();
+        stats.start();
         if(config.server.sleep) sleep_rnd(5000000);
 	stats.stop();
         // замена шаблонизатора на EJS

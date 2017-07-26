@@ -6,16 +6,26 @@ var log  = require('../libs/log.js').log;
 let web_server = function (cluster,stats) {
 
     var app = express();
+
+    var MasterLogger = function (req, res, next) {
+	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        if(config.log.info) log({type:'INFO',wid:null,msg:'web system admin: htmlver:' + req.httpVersion 
+	        + ' server:' + req.headers['host']
+	        + ' user-agent:"'  +req.headers['user-agent'] + '"'
+	        + ' method:'  +req.method 
+	        + ' url:' + req.url 
+	        + ' RemoteIP:' + ip});
+        next();
+    };
+
+    app.use(MasterLogger);
+
+
+
     app.get('/', function(req, res) {
 	stats.start()
 	var current_time =Date.now()
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	if(config.log.info) log({type:'INFO',wid:null,msg:'web system admin: htmlver:' + req.httpVersion 
-			    + ' server:' + req.headers['host']
-			    + ' user-agent:"'  +req.headers['user-agent'] + '"'
-			    + ' method:'  +req.method 
-			    + ' url:' + req.url 
-			    + ' RemoteIP:' + ip});
 	// замена шаблона на EJS парсер
 	var out_html='<table style="width:100%"> <tr><th>Workers ID</th><th>Workers PID</th><th>Uptime server</th><th>NodeJS ver.</th><th>uptime workers</th></tr>';
 	for(var k in cluster.workers) {

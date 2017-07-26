@@ -1,6 +1,5 @@
 var cluster = require('cluster');
 
-
 if (cluster.isMaster) {
     var master = require('./master/master.js');
     master();
