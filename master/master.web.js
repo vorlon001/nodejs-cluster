@@ -1,9 +1,11 @@
+var cluster = require('cluster');
 var http = require('http');
 var express = require('express');
 var config = require('../config/config.master.json');
 var log  = require('../libs/log.js').log;
+var stats = require('./master.stats.js').stats;
 
-let web_server = function (cluster,stats) {
+let web_server = function () {
 
     var app = express();
 
@@ -19,8 +21,6 @@ let web_server = function (cluster,stats) {
     };
 
     app.use(MasterLogger);
-
-
 
     app.get('/', function(req, res) {
 	stats.start()
