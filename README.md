@@ -5,7 +5,7 @@ Module: Cluster, Express 4.0
 
 run:
 1) npm i
-2) npm starts
+2) npm start
 
 
 logs in logs/*
